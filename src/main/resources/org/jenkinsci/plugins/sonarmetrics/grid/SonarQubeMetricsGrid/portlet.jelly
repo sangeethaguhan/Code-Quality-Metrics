@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:dp="/hudson/plugins/view/dashboard" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <st:header name="Content-Type" value="text/html;charset=UTF-8" />
+    <j:new className="java.text.DecimalFormat" var="format">
+        <j:arg type="java.lang.String" value="0%" />
+    </j:new>
+    <dp:decorate portlet="${it}" width="9">
+        <tr>
+            <td class="pane-header" style="vertical-align: middle">${%Job}</td>
+            <td class="pane-header" colspan="2">${%LinesOfCode}</td>
+            <td class="pane-header" colspan="2">${%Files}</td>
+            <td class="pane-header" colspan="2">${%Functions}</td>
+            <td class="pane-header" colspan="2">${%Bug}</td>
+            <td class="pane-header" colspan="2">${%Vulnerabilities}</td>
+            <td class="pane-header" colspan="2">${%CodeSmells}</td>
+            <td class="pane-header" colspan="2">${%Complexity}</td>
+            <td class="pane-header" colspan="2">% ${%Duplication}</td>
+            <td class="pane-header" colspan="2">${%Coverage}</td>
+        </tr>
+        <j:set var="summary" value="${it.getSonarQubeMetricsResultsSummary(jobs)}"/>
+        <j:forEach var="tr" items="${summary.sonarQubeMetricsResults}">
+            <tr>
+                <td>
+                    <dp:jobLink job="${tr.job}"/>
+                </td>
+                <td colspan="2">${tr.linesOfCode}</td>
+                <td colspan="2">${tr.noOfFiles}</td>
+                <td colspan="2">${tr.noOfFunctions}</td>
+                <td colspan="2">${tr.bugs}</td>
+                <td colspan="2">${tr.vulnerabilities}</td>
+                <td colspan="2">${tr.codesmells}</td>
+                <td colspan="2">${tr.complexity}</td>
+                <td colspan="2">${tr.duplicatedLinesDensity}</td>
+                <td colspan="2">${tr.coverage}</td>
+            </tr>
+        </j:forEach>
+        <!--tr>
+            <td>${%Total}</td>
+                <td colspan="2">${tr.totalLinesOfCode}</td>
+                <td colspan="2">${tr.totalNoOfFiles}</td>
+                <td colspan="2">${tr.totalNoOfFunctions}</td>
+                <td colspan="2">${tr.totalBugs}</td>
+                <td colspan="2">${tr.totalVulnerabilities}</td>
+                <td colspan="2">${tr.totalCodesmells}</td>
+                <td colspan="2">${tr.totalComplexity}</td>
+                <td colspan="2">${tr.totalDuplicatedLinesDensity}</td>
+                <td colspan="2">${tr.totalCoverage}</td>
+        </tr-->
+    </dp:decorate>
+</j:jelly>
+

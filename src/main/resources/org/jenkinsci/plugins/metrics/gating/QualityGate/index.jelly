@@ -1,0 +1,140 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <l:layout title="Quality Gate v1.0">
+        
+        <l:side-panel>
+            <t:queue items="${app.queue.items}"/>
+            <t:executors/>
+        </l:side-panel>
+        
+        <l:main-panel>
+        
+            <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                $('#qualitygate td.qualifyTests').each(function(){
+                if ($(this).text() == '0') {
+                $(this).css('background-color','#FFD0C5');
+                $(this).css('alt',"Quality Gate v1.0 violation: There is no unit test available for this project");
+                } else {
+                $(this).css('background-color','#DEFFC5');
+                }
+                });
+                });
+                
+                $(document).ready(function(){
+                $('#qualitygate td.qualifyCodeCoverage').each(function(){
+                if ($(this).text() == '0.0') {
+                $(this).css('background-color','#FFD0C5');
+                $(this).css('alt',"Quality Gate v1.0 violation: Code coverage must be > 0%");
+                } else {
+                $(this).css('background-color','#DEFFC5');
+                }
+                });
+                });
+                
+                $(document).ready(function(){
+                $('#qualitygate td.qualifyParsedError').each(function(){
+                if ($(this).text() == '0') {
+                $(this).css('background-color','#DEFFC5');
+                } else {
+                $(this).css('background-color','#FFD0C5');
+                $(this).css('alt',"Quality Gate v1.0 violation: You shouldn't have any error reported in console output");
+                            
+                }
+                });
+                });
+            </script>
+            <h1>${%QualityGate.title}</h1>
+            <h3>${%QualityGate.declared.title}</h3>
+            <h4>${%QualityGate.description.title}</h4>
+            
+            <table id="qualitygate" class="sortable pane bigtable">
+                <tr>
+                    <td width="35%" class="pane-header" style="vertical-align: middle; ">
+                        <b>${%Jenkins Job}</b>
+                    </td>
+                     <td class="pane-header" colspan="2">
+                        <b>${%Project Owner}</b>
+                    </td>  
+                     <td class="pane-header" colspan="2">
+                        <b>${%Last Success Time}</b>
+                    </td>  
+                    <td class="pane-header" colspan="2">
+                        <b>${%Lines Of Code}</b>
+                    </td>
+                    <td class="pane-header" colspan="2">
+                        <b>${%Files}</b>
+                    </td>
+                    <td class="pane-header" colspan="2">
+                        <b>${%Functions}</b>
+                    </td>
+                    <td class="pane-header" colspan="2">
+                        <b>${%Total Tests}</b>
+                    </td>
+                    <!--td class="pane-header" colspan="2">%${%Success}</td-->
+                    <td class="pane-header" colspan="2">
+                        <b>%${%Line}</b>
+                    </td>
+                    <td class="pane-header" colspan="2">
+                        <b>${%Parsed Errors}</b>
+                    </td>  
+                          
+                    
+                </tr>
+                <j:set var="summary" value="${it.getQualityMetricsResultsSummary()}"/>
+               <j:set var="org" value="Git" />
+               <j:forEach var="tr" items="${summary.qualityMetricsResults}">
+                   <j:if test="${org != tr.gitOrgName}">
+                   <j:set var="org" value="${tr.gitOrgName}" />
+                       <tr>
+                       <td colspan="18" width="35%" bgcolor="05043C" align="center" >
+                           <b><a style="color:white" href="https://github.home.247-inc.net/${tr.gitOrgName}">${tr.gitOrgName}</a></b>
+                       </td>
+                       </tr>
+                   </j:if>
+                    
+                    <tr>
+                        <td width="35%">
+                            <a href="${tr.jobUrl}">${tr.jobName}</a>
+                        </td>
+                        <td colspan="2" class="pane">
+                            <a href="mailto:${tr.projectOwner}@247-inc.com">${tr.projectOwner}</a>
+                        </td>
+                        <td colspan="2" class="pane">
+                            <a href="${tr.jobUrl}/lastSuccessfulBuild/">${tr.lastSuccess}</a>
+                        </td>
+                        
+                        <td colspan="2" class="pane">
+                            <a href="${tr.sonarQubeUrl}/component_measures/metric/ncloc/list?id=${tr.sonarProjectKey}">${tr.linesOfCode}</a>
+                        </td>
+                        <td colspan="2" class="pane">
+                            <a href="${tr.sonarQubeUrl}/component_measures/metric/files/list?id=${tr.sonarProjectKey}">${tr.noOfFiles}</a>
+                        </td>
+                        <td colspan="2" class="pane">
+                            <a href="${tr.sonarQubeUrl}/component_measures/metric/functions/list?id=${tr.sonarProjectKey}">${tr.noOfFunctions}</a>
+                        </td>
+                        <td colspan="2" class="pane qualifyTests">
+                            <a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsCount}</a>
+                        </td>
+                        <!--td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsSuccessPct}</a></td-->
+                        <td colspan="2" class="pane qualifyCodeCoverage">
+                            <a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/jacoco/">${tr.lineCoverage}</a>
+                        </td>
+                        <td colspan="2" class="pane qualifyParsedError">
+                            <a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/parsed_console/">${tr.totalParsedErrors}</a>
+                        </td>
+                    </tr>
+                </j:forEach>
+            </table>
+            <!--f:form method="post">
+                <f:section title="Email this report">
+                    <f:entry title="${%List of Recepients}" help="...">
+                        <f:textbox field="accessId" />
+                    </f:entry>
+                    <f:validateButton title="${%Send}" progress="${%Sending...}" method="testConnection" with="accessId" />
+                </f:section>
+            </f:form-->
+        </l:main-panel>
+    </l:layout>
+</j:jelly>

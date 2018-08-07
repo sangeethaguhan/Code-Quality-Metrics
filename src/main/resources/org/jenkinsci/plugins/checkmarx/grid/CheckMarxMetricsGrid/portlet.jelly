@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:dp="/hudson/plugins/view/dashboard" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <j:new className="java.text.DecimalFormat" var="format">
+        <j:arg type="java.lang.String" value="0%" />
+    </j:new>
+    <dp:decorate portlet="${it}" width="9">
+        <tr>
+            <td class="pane-header" style="vertical-align: middle">${%Job}</td>
+			<td class="pane-header" colspan="2">${%High}</td>
+			<td class="pane-header" colspan="2">${%Medium}</td>
+			<td class="pane-header" colspan="2">${%Low}</td>
+        </tr>
+        <j:set var="summary" value="${it.getCheckMarxMetricsResultsSummary(jobs)}"/>
+        <j:forEach var="tr" items="${summary.checkMarxMetricsResults}">
+            <tr>
+                <td>
+                    <dp:jobLink job="${tr.job}"/>
+                </td>
+                <td colspan="2">${tr.high}</td>
+		<td colspan="2">${tr.medium}</td>
+                <td colspan="2">${tr.low}</td>
+            </tr>
+        </j:forEach>
+        <!--tr>
+            <td>${%Total}</td>
+                <td colspan="2">${tr.totalHigh}</td>
+		<td colspan="2">${tr.totalMedium}</td>
+                <td colspan="2">${tr.totalLow}</td>
+        </tr-->
+    </dp:decorate>
+</j:jelly>
+
+

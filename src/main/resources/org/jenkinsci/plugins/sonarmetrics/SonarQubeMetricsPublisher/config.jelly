@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:entry>
+	  <table width="78%">
+	      <col width="10%"/>
+	      <col width="10%"/>
+	      <col width="10%"/>
+	      <col width="10%"/>
+	      <col width="10%"/>
+	      <col width="10%"/>
+	      <col width="10%"/>
+              <col width="10%"/>
+	      <col width="10%"/>
+              <col width="10%"/>
+	        <thead>
+	            <tr>
+	                <td width="10%"></td>
+	                <td width="10%">${%LinesOfCode}</td>
+	                <td width="10%">${%NoOfFiles}</td>
+	                <td width="10%">${%NoOfFunctions}</td>
+	                <td width="10%">${%TotalIssues}</td>
+	                <td width="10%">${%Blocker}</td>
+	                <td width="10%">${%Critical}</td>
+                        <td width="10%">${%Major}</td>
+                        <td width="10%">${%Minor}</td>
+                        <td width="10%">${%Info}</td>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            <tr>
+	                <!--th>
+	                    <img src="${rootURL}/images/16x16/health-80plus.gif" alt="100%"
+	                         title="${%health.100.title}"/>
+	                </th-->
+	                <td>
+	                    <f:textbox field="linesOfCode" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="noOfFiles" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="noOfFunctions" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="totalIssues" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="blockerIssues" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="criticalIssues" default="0" />
+	                </td>
+                        <td>
+	                    <f:textbox field="majorIssues" default="0" />
+	                </td>
+                        <td>
+	                    <f:textbox field="minorIssues" default="0" />
+	                </td>
+                        <td>
+	                    <f:textbox field="infoIssues" default="0" />
+	                </td>
+	            </tr>
+	            <!--tr>
+	                <th>
+	                    <img src="${rootURL}/images/16x16/health-00to19.gif" alt="0%"
+	                         title="${%health.0.title}"/>
+	                </th>
+	                <td>
+	                    <f:textbox field="minimumInstructionCoverage" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="minimumBranchCoverage" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="minimumComplexityCoverage" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="minimumLineCoverage" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="minimumMethodCoverage" default="0" />
+	                </td>
+	                <td>
+	                    <f:textbox field="minimumClassCoverage" default="0" />
+	                </td>
+	            </tr-->
+	        </tbody>
+	    </table>
+  </f:entry>
+  <!--f:entry field="changeBuildStatus">
+   <f:checkbox checked="${instance.selected}" title="Change build status according the thresholds"/>
+  </f:entry-->
+</j:jelly>

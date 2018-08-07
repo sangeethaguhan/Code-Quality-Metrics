@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:dp="/hudson/plugins/view/dashboard" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <st:header name="Content-Type" value="text/html;charset=UTF-8" />
+    <script type="text/javascript" src="${rootURL}/plugin/sloccount/yui/utilities.js"/>
+    <script type="text/javascript" src="${rootURL}/plugin/sloccount/yui/tabview-min.js"/>
+    <script type="text/javascript" src="${rootURL}/plugin/sloccount/yui/dispatcher-min.js"/>
+    
+    <!--j:new className="java.text.DecimalFormat" var="format">
+        <j:arg type="java.lang.String" value="0%" />
+    </j:new-->
+    <script type="text/javascript">
+        var myTabs = new YAHOO.widget.TabView("statistics");
+        myTabs.set('activeIndex', 0);
+    </script>
+    <st:include page="/org/jenkinsci/plugins/metrics/grid/QualityMetricsGrid/css.jelly" />
+    
+    <div id="statistics" class="yui-navset">
+        <!--dp:decorate portlet="${it}" width="9"-->    
+        <ul class="yui-nav"> 
+            <li>
+                <a href="#tab1">
+                    <em>SonarQube</em>
+                </a>
+            </li> 
+            <li class="selected">
+                <a href="#tab2">
+                    <em>CheckMarx</em>
+                </a>
+            </li> 
+            <li>
+                <a href="#tab3">
+                    <em>Unit Test Results</em>
+                </a>
+            </li> 
+            <li>
+                <a href="#tab6">
+                    <em>JaCoCo Code Coverage</em>
+                </a>
+            </li> 
+            <li>
+                <a href="#tab4">
+                    <em>Warnings</em>
+                </a>
+            </li> 
+            <li>
+                <a href="#tab5">
+                    <em>Parsed Console Output</em>
+                </a>
+            </li> 
+            <li>
+                <a href="#tab7">
+                    <em>Gerrit Code Review</em>
+                </a>
+            </li> 
+        </ul>             
+        <div class="yui-content"> 
+            <div id="tab1">
+                <dp:decorate portlet="${it}" width="9">
+                    <tr>
+                        <td width="35%" class="pane-header" style="vertical-align: middle; ">${%Job}</td>
+                        <td class="pane-header" colspan="2">${%LinesOfCode}</td>
+                        <td class="pane-header" colspan="2">${%Files}</td>
+                        <td class="pane-header" colspan="2">${%Functions}</td>
+                        <td class="pane-header" colspan="2">${%Blocker}</td>
+                        <td class="pane-header" colspan="2">${%Critical}</td>
+                        <td class="pane-header" colspan="2">${%Bug}</td>
+                        <td class="pane-header" colspan="2">${%Vulnerabilities}</td>
+                        <td class="pane-header" colspan="2">${%CodeSmells}</td>
+                        <td class="pane-header" colspan="2">${%Complexity}</td>
+                        <td class="pane-header" colspan="2">%${%Duplication}</td>
+                        <td class="pane-header" colspan="2">${%Coverage}</td>
+                    </tr>
+                    <j:set var="summary" value="${it.getQualityMetricsResultsSummary(jobs)}"/>
+                    <j:forEach var="tr" items="${summary.qualityMetricsResults}">
+                        <tr>
+                            <td width="35%">
+                                <dp:jobLink job="${tr.job}"/>
+                            </td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_measures/metric/ncloc/list?id=${tr.sonarProjectKey}">${tr.linesOfCode}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_measures/metric/files/list?id=${tr.sonarProjectKey}">${tr.noOfFiles}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_measures/metric/functions/list?id=${tr.sonarProjectKey}">${tr.noOfFunctions}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_issues?id=${tr.sonarProjectKey}#resolved=false|severities=BLOCKER">${tr.blocker}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_issues?id=${tr.sonarProjectKey}#resolved=false|severities=CRITICAL">${tr.critical}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_issues?id=${tr.sonarProjectKey}#resolved=false|types=BUG">${tr.bugs}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_issues?id=${tr.sonarProjectKey}#resolved=false|types=VULNERABILITY">${tr.vulnerabilities}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_issues?id=${tr.sonarProjectKey}#resolved=false|types=CODE_SMELL">${tr.codesmells}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_measures/metric/complexity/list?id=${tr.sonarProjectKey}">${tr.complexity}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_measures/metric/duplicated_lines_density/list?id=${tr.sonarProjectKey}">${tr.duplicatedLinesDensity}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_measures/metric/coverage/list?id=${tr.sonarProjectKey}">${tr.coverage}</a></td>
+                        </tr>
+                    </j:forEach>
+                    <!--tr>
+                        <td>${%Total}</td>
+                            <td colspan="2">${tr.totalLinesOfCode}</td>
+                            <td colspan="2">${tr.totalNoOfFiles}</td>
+                            <td colspan="2">${tr.totalNoOfFunctions}</td>
+                            <td colspan="2">${tr.totalBugs}</td>
+                            <td colspan="2">${tr.totalVulnerabilities}</td>
+                            <td colspan="2">${tr.totalCodesmells}</td>
+                            <td colspan="2">${tr.totalComplexity}</td>
+                            <td colspan="2">${tr.totalDuplicatedLinesDensity}</td>
+                            <td colspan="2">${tr.totalCoverage}</td>
+                    </tr-->
+                </dp:decorate>
+                    
+            </div> 
+            <div id="tab2">
+                <dp:decorate portlet="${it}" width="9">
+                    <tr>
+                        <td width="35%" class="pane-header" style="vertical-align: middle">${%Job}</td>
+                        <td class="pane-header" colspan="2">${%High}</td>
+                        <td class="pane-header" colspan="2">${%Medium}</td>
+                        <td class="pane-header" colspan="2">${%Low}</td>
+                    </tr>
+                    <j:set var="summary" value="${it.getQualityMetricsResultsSummary(jobs)}"/>
+                    <j:forEach var="tr" items="${summary.qualityMetricsResults}">
+                        <tr>
+                            <td width="35%">
+                                <dp:jobLink job="${tr.job}"/>
+                            </td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/${tr.buildNumber}/checkmarx">${tr.highCheckMarx}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/${tr.buildNumber}/checkmarx">${tr.mediumCheckMarx}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/${tr.buildNumber}/checkmarx">${tr.lowCheckMarx}</a></td>
+                        </tr>
+                    </j:forEach>
+                    <!--tr>
+                        <td>${%Total}</td>
+                            <td colspan="2">${tr.totalHigh}</td>
+                            <td colspan="2">${tr.totalMedium}</td>
+                            <td colspan="2">${tr.totalLow}</td>
+                    </tr-->
+                </dp:decorate>
+                    
+            </div> 
+            <div id="tab3">
+                <dp:decorate portlet="${it}" width="9">
+                    <tr>
+                        <td width="35%" class="pane-header" style="vertical-align: middle; ">${%Job}</td>
+                        <td class="pane-header" colspan="2">${%TotalTests}</td>
+                        <td class="pane-header" colspan="2">${%Success}</td>
+                        <td class="pane-header" colspan="2">%${%Success}</td>
+                        <td class="pane-header" colspan="2">${%Failed}</td>
+                        <td class="pane-header" colspan="2">%${%Failed}</td>
+                        <td class="pane-header" colspan="2">${%Skipped}</td>
+                        <td class="pane-header" colspan="2">%${%Skipped}</td>
+                    </tr>
+                    <j:set var="summary" value="${it.getQualityMetricsResultsSummary(jobs)}"/>
+                    <j:forEach var="tr" items="${summary.qualityMetricsResults}">
+                        <tr>
+                            <td width="35%">
+                                <dp:jobLink job="${tr.job}"/>
+                            </td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsCount}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsSuccess}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsSuccessPct}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsFailed}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsFailedPct}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsSkipped}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/testReport/">${tr.unitTestsSkippedPct}</a></td>
+                        </tr>
+                    </j:forEach>
+                    <!--tr>
+                        <td>${%Total}</td>
+                            <td colspan="2">${tr.totalLinesOfCode}</td>
+                            <td colspan="2">${tr.totalNoOfFiles}</td>
+                            <td colspan="2">${tr.totalNoOfFunctions}</td>
+                            <td colspan="2">${tr.totalBugs}</td>
+                            <td colspan="2">${tr.totalVulnerabilities}</td>
+                            <td colspan="2">${tr.totalCodesmells}</td>
+                            <td colspan="2">${tr.totalComplexity}</td>
+                            <td colspan="2">${tr.totalDuplicatedLinesDensity}</td>
+                            <td colspan="2">${tr.totalCoverage}</td>
+                    </tr-->
+                </dp:decorate>
+            </div> 
+            
+                      
+            <div id="tab6">
+                <dp:decorate portlet="${it}" width="9">
+                    <tr>
+                        <td width="35%" class="pane-header" style="vertical-align: middle; ">${%Job}</td>
+                        <td class="pane-header" colspan="2">${%LinesOfCode}</td>
+                        <td class="pane-header" colspan="2">%${%Line}</td>
+                        <td class="pane-header" colspan="2">%${%Method}</td>
+                        <td class="pane-header" colspan="2">%${%Class}</td>
+                        <td class="pane-header" colspan="2">%${%Branch}</td>
+                        <td class="pane-header" colspan="2">%${%Instruction}</td>
+                        <td class="pane-header" colspan="2">%${%Complexity}</td>
+                    </tr>
+                    <j:set var="summary" value="${it.getQualityMetricsResultsSummary(jobs)}"/>
+                    <j:forEach var="tr" items="${summary.qualityMetricsResults}">
+                        <tr>
+                            <td width="35%">
+                                <dp:jobLink job="${tr.job}"/>
+                            </td>
+                            <td colspan="2" class="pane"><a href="${tr.sonarQubeUrl}/component_measures/metric/ncloc/list?id=${tr.sonarProjectKey}">${tr.linesOfCode}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/jacoco/">${tr.lineCoverage}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/jacoco/">${tr.methodCoverage}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/jacoco/">${tr.classCoverage}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/jacoco/">${tr.branchCoverage}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/jacoco/">${tr.instructionCoverage}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/jacoco/">${tr.complexityScore}</a></td>
+                        </tr>
+                    </j:forEach>
+                </dp:decorate>
+            </div> 
+            
+            <div id="tab4">
+                <dp:decorate portlet="${it}" width="9">
+                    <tr>
+                        <td width="35%" class="pane-header" style="vertical-align: middle; ">${%Job}</td>
+                        <td class="pane-header" colspan="2">${%FindBugs}</td>
+                        <td class="pane-header" colspan="2">${%CheckStyle}</td>
+                        <td class="pane-header" colspan="2">${%PMD}</td>
+                        <td class="pane-header" colspan="2">${%CompilerWarnings}</td>
+                        <td class="pane-header" colspan="2">${%TotalWarnings}</td>
+                    </tr>
+                    <j:set var="summary" value="${it.getQualityMetricsResultsSummary(jobs)}"/>
+                    <j:forEach var="tr" items="${summary.qualityMetricsResults}">
+                        <tr>
+                            <td width="35%">
+                                <dp:jobLink job="${tr.job}"/>
+                            </td>
+                            <td colspan="2" class="pane"><j:out value="${tr.findBugsWarnings}" /></td>
+                            <td colspan="2" class="pane"><j:out value="${tr.checkStyleWarnings}" /></td>
+                            <td colspan="2" class="pane"><j:out value="${tr.pmdWarnings}" /></td>
+                            <td colspan="2" class="pane"><j:out value="${tr.compilerWarnings}" /></td>
+                            <td colspan="2">${tr.totalWarnings}</td>
+                        </tr>
+                    </j:forEach>
+                    <!--tr>
+                        <td>${%Total}</td>
+                            <td colspan="2">${tr.totalLinesOfCode}</td>
+                            <td colspan="2">${tr.totalNoOfFiles}</td>
+                            <td colspan="2">${tr.totalNoOfFunctions}</td>
+                            <td colspan="2">${tr.totalBugs}</td>
+                            <td colspan="2">${tr.totalVulnerabilities}</td>
+                            <td colspan="2">${tr.totalCodesmells}</td>
+                            <td colspan="2">${tr.totalComplexity}</td>
+                            <td colspan="2">${tr.totalDuplicatedLinesDensity}</td>
+                            <td colspan="2">${tr.totalCoverage}</td>
+                    </tr-->
+                </dp:decorate>
+            </div> 
+            
+            <div id="tab5">
+                <dp:decorate portlet="${it}" width="9">
+                    <tr>
+                        <td width="35%" class="pane-header" style="vertical-align: middle; ">${%Job}</td>
+                        <td class="pane-header" colspan="2">${%ParsedErrors}</td>
+                        <td class="pane-header" colspan="2">${%ParsedWarnings}</td>
+                        <td class="pane-header" colspan="2">${%ParsedInfos}</td>
+                    </tr>
+                    <j:set var="summary" value="${it.getQualityMetricsResultsSummary(jobs)}"/>
+                    <j:forEach var="tr" items="${summary.qualityMetricsResults}">
+                        <tr>
+                            <td width="35%">
+                                <dp:jobLink job="${tr.job}"/>
+                            </td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/parsed_console/">${tr.totalParsedErrors}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/parsed_console/">${tr.totalParsedWarnings}</a></td>
+                            <td colspan="2" class="pane"><a href="/job/${tr.jenkinsJobName}/lastCompletedBuild/parsed_console/">${tr.totalParsedInfos}</a></td>
+                        </tr>
+                    </j:forEach>
+                </dp:decorate>
+            </div> 
+            
+             <div id="tab7">
+                <dp:decorate portlet="${it}" width="9">
+                    <tr>
+                        <td width="35%" class="pane-header" style="vertical-align: middle; ">${%Job}</td>
+                        <td class="pane-header" colspan="2">${%New}</td>
+                        <td class="pane-header" colspan="2">${%Draft}</td>
+                        <td class="pane-header" colspan="2">${%Submitted}</td>
+                        <td class="pane-header" colspan="2">${%Merged}</td>
+                        <td class="pane-header" colspan="2">${%Abandoned}</td>
+                    </tr>
+                    <j:set var="summary" value="${it.getQualityMetricsResultsSummary(jobs)}"/>
+                    <j:forEach var="tr" items="${summary.qualityMetricsResults}">
+                        <tr>
+                            <td width="35%">
+                                <dp:jobLink job="${tr.job}"/>
+                            </td>
+                            <td colspan="2" class="pane"><a href="${tr.gerritUrl}/#/q/status:open+project:${tr.gitProjectPath}">${tr.newCodeReviews}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.gerritUrl}/#/q/status:draft+project:${tr.gitProjectPath}">${tr.draftCodeReviews}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.gerritUrl}/#/q/status:submitted+project:${tr.gitProjectPath}">${tr.submittedCodeReviews}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.gerritUrl}/#/q/status:merged+project:${tr.gitProjectPath}">${tr.mergedCodeReviews}</a></td>
+                            <td colspan="2" class="pane"><a href="${tr.gerritUrl}/#/q/status:abandoned+project:${tr.gitProjectPath}">${tr.abandonedCodeReviews}</a></td>
+                        </tr>
+                    </j:forEach>
+                </dp:decorate>
+            </div> 
+            
+        </div> 
+        
+        <!--/dp:decorate-->
+
+    </div>
+</j:jelly>
